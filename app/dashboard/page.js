@@ -30,12 +30,11 @@ async function getDashboardData(clientId) {
     .select('*')
     .eq('client_id', clientId)
   
-  // Get unread messages
+  // Get unread messages (count team messages as unread for now)
   const { data: unreadMessages } = await supabase
     .from('messages')
     .select('*')
     .eq('client_id', clientId)
-    .eq('read', false)
     .eq('sender_type', 'team')
   
   return {

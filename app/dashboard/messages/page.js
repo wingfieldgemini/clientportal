@@ -19,7 +19,7 @@ export default async function MessagesPage() {
   const clientData = await getClientData(user.id)
   const messages = await getMessages(clientData.client_id)
   
-  const unreadCount = messages.filter(m => !m.read && m.sender_type === 'team').length
+  const unreadCount = messages.filter(m => m.sender_type === 'team').length
 
   return (
     <div className="space-y-6 h-full">

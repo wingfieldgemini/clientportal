@@ -19,9 +19,9 @@ export default async function DocumentsPage() {
   const clientData = await getClientData(user.id)
   const documents = await getDocuments(clientData.client_id)
   
-  const contracts = documents.filter(d => d.type === 'contract')
-  const proposals = documents.filter(d => d.type === 'proposal')
-  const other = documents.filter(d => !['contract', 'proposal'].includes(d.type))
+  const contracts = documents.filter(d => d.category === 'contract')
+  const proposals = documents.filter(d => d.category === 'proposal')
+  const other = documents.filter(d => !['contract', 'proposal'].includes(d.category))
   
   const pendingReview = documents.filter(d => d.status === 'pending_review').length
 
