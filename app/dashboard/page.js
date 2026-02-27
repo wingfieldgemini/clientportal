@@ -4,37 +4,33 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 async function getDashboardData(clientId) {
   const supabase = createServerSupabaseClient()
   
-  // Get project data
   const { data: project } = await supabase
     .from('projects')
     .select('*')
     .eq('client_id', clientId)
     .single()
   
-  // Get milestones
   const { data: milestones } = await supabase
     .from('milestones')
     .select('*')
     .eq('project_id', project?.id)
-    .order('due_date', { ascending: true })
+    .order('sort_order', { ascending: true })
   
-  // Get invoices
   const { data: invoices } = await supabase
     .from('invoices')
     .select('*')
     .eq('client_id', clientId)
   
-  // Get documents
   const { data: documents } = await supabase
     .from('documents')
     .select('*')
     .eq('client_id', clientId)
   
-  // Get unread messages (count team messages as unread for now)
   const { data: unreadMessages } = await supabase
     .from('messages')
     .select('*')
     .eq('client_id', clientId)
+    .eq('read', false)
     .eq('sender_type', 'team')
   
   return {
@@ -51,9 +47,10 @@ export default async function DashboardPage() {
   const clientData = await getClientData(user.id)
   const dashboardData = await getDashboardData(clientData.client_id)
   
-  const currentMilestone = dashboardData.milestones.find(m => m.status === 'in_progress')
-  const completedMilestones = dashboardData.milestones.filter(m => m.status === 'completed')
-  const progressPercentage = Math.round((completedMilestones.length / dashboardData.milestones.length) * 100) || 0
+  const completedMilestones = dashboardData.milestones.filter(m => m.completed)
+  const currentMilestone = dashboardData.milestones.find(m => !m.completed)
+  const totalMilestones = dashboardData.milestones.length
+  const progressPercentage = totalMilestones > 0 ? Math.round((completedMilestones.length / totalMilestones) * 100) : 0
   
   const paidInvoices = dashboardData.invoices.filter(i => i.status === 'paid').length
   const pendingInvoices = dashboardData.invoices.filter(i => i.status === 'pending').length
@@ -61,17 +58,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold text-white">
           Welcome back, {clientData.client.business_name}
         </h1>
         <p className="text-gray-400 mt-2">
-          Here's your project overview and latest updates
+          Here&apos;s your project overview and latest updates
         </p>
       </div>
 
-      {/* Project Status Card */}
       {dashboardData.project && (
         <div className="bg-white rounded-lg p-6 text-black">
           <h2 className="text-xl font-semibold mb-4">Project Status</h2>
@@ -79,7 +74,7 @@ export default async function DashboardPage() {
           {currentMilestone && (
             <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">Current Milestone: {currentMilestone.name}</span>
+                <span className="font-medium">Current: {currentMilestone.name}</span>
                 <span className="text-wg-red font-bold">{progressPercentage}% Complete</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -98,7 +93,6 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg p-6 text-black">
           <h3 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">Invoices</h3>
@@ -137,7 +131,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Next Milestone */}
       {currentMilestone && (
         <div className="bg-white rounded-lg p-6 text-black">
           <h2 className="text-xl font-semibold mb-4">Up Next</h2>

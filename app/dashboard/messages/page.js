@@ -19,11 +19,10 @@ export default async function MessagesPage() {
   const clientData = await getClientData(user.id)
   const messages = await getMessages(clientData.client_id)
   
-  const unreadCount = messages.filter(m => m.sender_type === 'team').length
+  const unreadCount = messages.filter(m => !m.read && m.sender_type === 'team').length
 
   return (
     <div className="space-y-6 h-full">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Messages</h1>
@@ -38,7 +37,6 @@ export default async function MessagesPage() {
         </div>
       </div>
 
-      {/* Message Thread */}
       <div className="bg-white rounded-lg flex-1 min-h-[600px] flex flex-col">
         <MessageThread 
           messages={messages} 

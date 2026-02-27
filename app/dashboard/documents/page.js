@@ -22,86 +22,57 @@ export default async function DocumentsPage() {
   const contracts = documents.filter(d => d.category === 'contract')
   const proposals = documents.filter(d => d.category === 'proposal')
   const other = documents.filter(d => !['contract', 'proposal'].includes(d.category))
-  
   const pendingReview = documents.filter(d => d.status === 'pending_review').length
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Documents</h1>
-          <p className="text-gray-400 mt-2">View contracts, proposals, and project documents</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-white">Documents</h1>
+        <p className="text-gray-400 mt-2">View contracts, proposals, and project documents</p>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg p-6 text-black">
           <h3 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">All Documents</h3>
-          <div className="mt-2">
-            <span className="text-3xl font-bold">{documents.length}</span>
-          </div>
+          <div className="mt-2"><span className="text-3xl font-bold">{documents.length}</span></div>
         </div>
-        
         <div className="bg-white rounded-lg p-6 text-black">
           <h3 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">Contracts</h3>
-          <div className="mt-2">
-            <span className="text-3xl font-bold">{contracts.length}</span>
-          </div>
+          <div className="mt-2"><span className="text-3xl font-bold">{contracts.length}</span></div>
         </div>
-        
         <div className="bg-white rounded-lg p-6 text-black">
           <h3 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">Proposals</h3>
-          <div className="mt-2">
-            <span className="text-3xl font-bold">{proposals.length}</span>
-          </div>
+          <div className="mt-2"><span className="text-3xl font-bold">{proposals.length}</span></div>
         </div>
-        
         <div className="bg-white rounded-lg p-6 text-black">
           <h3 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">Pending Review</h3>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-wg-red">{pendingReview}</span>
-          </div>
+          <div className="mt-2"><span className="text-3xl font-bold text-wg-red">{pendingReview}</span></div>
         </div>
       </div>
 
-      {/* Documents by Type */}
-      {contracts.length > 0 && (
+      {proposals.length > 0 && (
         <div className="bg-white rounded-lg p-6 text-black">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
-            📋 Contracts
-          </h2>
+          <h2 className="text-xl font-bold mb-4">📝 Proposals</h2>
           <div className="grid gap-4">
-            {contracts.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
-            ))}
+            {proposals.map((doc) => <DocumentCard key={doc.id} document={doc} />)}
           </div>
         </div>
       )}
 
-      {proposals.length > 0 && (
+      {contracts.length > 0 && (
         <div className="bg-white rounded-lg p-6 text-black">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
-            📝 Proposals
-          </h2>
+          <h2 className="text-xl font-bold mb-4">📋 Contracts</h2>
           <div className="grid gap-4">
-            {proposals.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
-            ))}
+            {contracts.map((doc) => <DocumentCard key={doc.id} document={doc} />)}
           </div>
         </div>
       )}
 
       {other.length > 0 && (
         <div className="bg-white rounded-lg p-6 text-black">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
-            📄 Other Documents
-          </h2>
+          <h2 className="text-xl font-bold mb-4">📄 Other Documents</h2>
           <div className="grid gap-4">
-            {other.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
-            ))}
+            {other.map((doc) => <DocumentCard key={doc.id} document={doc} />)}
           </div>
         </div>
       )}
