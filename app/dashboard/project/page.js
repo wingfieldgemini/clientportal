@@ -5,19 +5,17 @@ import ProjectTimeline from '@/components/ProjectTimeline'
 async function getProjectData(clientId) {
   const supabase = createServerSupabaseClient()
   
-  // Get project data
   const { data: project } = await supabase
     .from('projects')
     .select('*')
     .eq('client_id', clientId)
     .single()
   
-  // Get milestones
   const { data: milestones } = await supabase
     .from('milestones')
     .select('*')
     .eq('project_id', project?.id)
-    .order('due_date', { ascending: true })
+    .order('sort_order', { ascending: true })
   
   return {
     project,
@@ -39,17 +37,19 @@ export default async function ProjectPage() {
     )
   }
   
-  const completedMilestones = projectData.milestones.filter(m => m.status === 'completed')
-  const progressPercentage = Math.round((completedMilestones.length / projectData.milestones.length) * 100) || 0
+  const completedMilestones = projectData.milestones.filter(m => m.completed)
+  const totalMilestones = projectData.milestones.length
+  const progressPercentage = totalMilestones > 0 ? Math.round((completedMilestones.length / totalMilestones) * 100) : 0
 
   return (
     <div className="space-y-6">
-      {/* Project Header */}
       <div className="bg-white rounded-lg p-6 text-black">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold">{projectData.project.name}</h1>
-            <p className="text-gray-600 mt-2">{projectData.project.description}</p>
+            {projectData.project.notes && (
+              <p className="text-gray-600 mt-2">{projectData.project.notes}</p>
+            )}
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-wg-red">{progressPercentage}%</div>
@@ -57,11 +57,10 @@ export default async function ProjectPage() {
           </div>
         </div>
         
-        {/* Overall Progress Bar */}
         <div className="mt-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>Overall Progress</span>
-            <span>{completedMilestones.length} of {projectData.milestones.length} milestones</span>
+            <span>{completedMilestones.length} of {totalMilestones} milestones</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
@@ -72,7 +71,6 @@ export default async function ProjectPage() {
         </div>
       </div>
 
-      {/* Project Timeline */}
       <div className="bg-white rounded-lg p-6 text-black">
         <h2 className="text-2xl font-bold mb-6">Project Timeline</h2>
         <ProjectTimeline milestones={projectData.milestones} />
