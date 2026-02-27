@@ -27,8 +27,8 @@ export default function LoginForm() {
       if (error) {
         setError(error.message)
       } else {
-        router.push('/dashboard')
-        router.refresh()
+        // Use window.location to ensure cookies are sent on next request
+        window.location.href = '/dashboard'
       }
     } catch (err) {
       setError(err.message || 'An unexpected error occurred')
